@@ -1,10 +1,21 @@
 import smtplib
 import smtpd #bib do servidor
 import asyncore #multiplas conexoes
+import os
 
 #tabela com 
 domainTable = {'rivendell.com': ['127.0.0.2', 1026]}
-destination = None
+destination = 'home'
+receiver = ''
+
+def createFolder(direc):
+    print('chamando createFolder')
+    try:
+        if not os.path.exists(direc):
+            os.makedirs(direc)
+    except OSError:
+        print ('Error: creating directory. ' + direc)
+
 
 #simula request para o DNS e caso nao encontrado return a string 'Not Found'
 def DNSrequest(domain):
@@ -21,14 +32,22 @@ class CustomsSMTPServer(smtpd.SMTPServer):
         print("Tamanho da mensagem: {}".format(len(data)))
         print(f'{data}')
         destination = rcpttos[0]
+        receiver = destination[:destination.find('@')]
+        print(receiver)
         destination = destination[destination.find('@') + 1:]
+        if destination == 'gondor.com':
+            destination = 'home'
         print(destination)
-        print(domainTable[destination])
+        #print(domainTable[destination])
 
-        if destination != None:
+        if destination != 'home':
             print('DESTINATION ACQUIRED!!!')
             server_to = smtplib.SMTP(domainTable[destination][0], domainTable[destination][1])
             server_to.sendmail(mailfrom, rcpttos, data)
+        else:
+            createFolder(f'./{receiver}/Inbox/')
+            f = open(f'./{receiver}/Inbox/msg.txt', 'w+')
+            f.write(f'{data}')
 
 server = CustomsSMTPServer(("127.0.0.1", 1025), None)
 
