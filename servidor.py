@@ -100,7 +100,7 @@ while True:
            response += 'Transfer-Encoded: chunked\r\n'
            response += date_formatted
            response += "Content-Type:text/html; charset=UTF-8\r\n\r\n"
-           response += f"GET function:\n\tGET localhost:{serverPort}\nOPTIONS function:\n\tOPTIONS / HTTP/1.1\nHEAD function:\n\tHEAD localhost:{serverPort}\nPOST function:\n\t*Available only through browser\r\n\r\n"
+           response += f"GET function:\n\tGET localhost:{serverPort}\nOPTIONS function:\n\tOPTIONS / HTTP/1.1\nHEAD function:\n\tHEAD / HTTP/1.1\nPOST function:\n\t*Available only through browser\r\n\r\n"
        connectionSocket.send(response.encode())
    
     if splitted_request[0] == "HEAD":
