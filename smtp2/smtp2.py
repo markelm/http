@@ -17,9 +17,9 @@ def createFolder(direc):
         print ('Error: creating directory. ' + direc)
 
 
-#simula request para o DNS e caso nao encontrado return a string 'Not Found'
+#simula request para o DNS e caso nao encontrado retorna a string 'Not Found'
 def DNSrequest(domain):
-    return domaninTable.get('gondor.com', 'Not Found')
+    return domainTable.get('gondor.com', 'Not Found')
 
 #classe herdada para sobrescrita do metido de processamento de mensagens
 class CustomsSMTPServer(smtpd.SMTPServer):
@@ -33,20 +33,21 @@ class CustomsSMTPServer(smtpd.SMTPServer):
         print(f'{data}')
         destination = rcpttos[0]
         receiver = destination[:destination.find('@')]
-        print(receiver)
+        #print(receiver)
         destination = destination[destination.find('@') + 1:]
         if destination == 'rivendell.com':
             destination = 'home'
-        print(destination)
+        #print(destination)
         #print(domainTable[destination])
 
         if destination != 'home':
-            print('DESTINATION ACQUIRED!!!')
-            server_to = smtplib.SMTP(domainTable[destination][0], domainTable[destination][1])
+            d = DNSrequest(destination)
+            print('\nDESTINATION ACQUIRED!!!')
+            server_to = smtplib.SMTP(d[0], d[1])
             server_to.sendmail(mailfrom, rcpttos, data)
         else:
             createFolder(f'./{receiver}/Inbox/')
-            f = open(f'./{receiver}/Inbox/msg.txt', 'w+')
+            f = open(f'./{receiver}/Inbox/msg_{mailfrom}.txt', 'w+')
             f.write(f'{data}')
 
 server = CustomsSMTPServer(("127.0.0.2", 1026), None)
